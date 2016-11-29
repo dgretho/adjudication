@@ -11,7 +11,7 @@
     "webpack": "^1.13.3"
   },
   "scripts": {
-    "install": "webpack",
+    "heroku-postbuild": "webpack",
     "start": "node index.js"
   },
   "repository": {
