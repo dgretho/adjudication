@@ -1,0 +1,23 @@
+{
+  "name": "adjudication",
+  "version": "1.0.0",
+  "description": "A website for adjudicators",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.14.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dgretho/adjudication.git"
+  },
+  "author": "David Thomas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dgretho/adjudication/issues"
+  },
+  "homepage": "https://github.com/dgretho/adjudication#readme"
+}
