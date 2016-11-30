@@ -20,7 +20,8 @@ app.get('/cases', function(request, response) {
       dateAdjudicationEntered: new Date(2016, 2, 2),
       depositAmount: 1000,
       tenantAmount: 800,
-      landlordAmount: 700
+      landlordAmount: 700,
+      caseReference: 1
     },
     { 
       address: "2 Road Name, Town, City, Post Code", 
@@ -29,7 +30,8 @@ app.get('/cases', function(request, response) {
       dateAdjudicationEntered: new Date(2016, 9, 1),
       depositAmount: 2000,
       tenantAmount: 1600,
-      landlordAmount: 1400
+      landlordAmount: 1400,
+      caseReference: 2
     },
     { 
       address: "10 Avenue Name, Town, City, Post Code", 
@@ -38,7 +40,8 @@ app.get('/cases', function(request, response) {
       dateAdjudicationEntered: new Date(2016, 7, 20),
       depositAmount: 5000,
       tenantAmount: 4000,
-      landlordAmount: 1500
+      landlordAmount: 1500,
+      caseReference: 3
     },
   ];
   response.send(cases);

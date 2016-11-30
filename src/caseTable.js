@@ -13,7 +13,7 @@ function CaseTableRow(props) {
 
 function CaseTable(props) {
     var rows = props.cases.map(function(step) {
-        return (<CaseTableRow case={step} key={step.address} />); /* TODO: Come up with better key than address */
+        return (<CaseTableRow case={step} key={step.caseReference} />);
     });
     
     return (
