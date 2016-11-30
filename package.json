@@ -15,7 +15,8 @@
   },
   "scripts": {
     "heroku-postbuild": "webpack",
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "webpack -d --watch"
   },
   "repository": {
     "type": "git",
