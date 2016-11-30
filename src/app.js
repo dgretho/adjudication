@@ -1,7 +1,7 @@
 /* global fetch */
 import React from 'react';
 import { render } from 'react-dom';
-import Hello from './hello';
+import CaseTable from './caseTable';
 
 class App extends React.Component {
     constructor() {
@@ -32,7 +32,7 @@ class App extends React.Component {
     }
 
     render() {
-        return <Hello cases={this.state.cases}/>;
+        return <CaseTable cases={this.state.cases}/>;
     }
 }
 
