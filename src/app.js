@@ -1,7 +1,10 @@
 /* global fetch */
 import React from 'react';
 import { render } from 'react-dom';
+import { PageHeader } from 'react-bootstrap';
+
 import CaseTable from './caseTable';
+
 
 class App extends React.Component {
     constructor() {
@@ -32,7 +35,12 @@ class App extends React.Component {
     }
 
     render() {
-        return <CaseTable cases={this.state.cases}/>;
+        return (
+            <div className="container">
+                <h2>Please review the cases waiting to be assigned</h2>
+                <CaseTable cases={this.state.cases}/>
+            </div>
+        );
     }
 }
 
