@@ -1,5 +1,12 @@
+import React from 'react';
+import {render} from 'react-dom';
 var hello = require('./hello');
-var $ = require('jquery');
 
 var hellowWorld = hello + " World!";
-$('<h1></h1>').text(hellowWorld).appendTo('body');
+class App extends React.Component {
+  render () {
+    return <p>{hellowWorld}</p>;
+  }
+}
+
+render(<App/>, document.getElementById('app'));
