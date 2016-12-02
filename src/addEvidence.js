@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 
 import { Button, Modal, FormGroup, FormControl, ControlLabel, Radio } from 'react-bootstrap';
 
-class AddCase extends React.Component {
+class AddEvidence extends React.Component {
     constructor() {
         super();
         
@@ -94,4 +94,4 @@ class AddCase extends React.Component {
     }
 }
 
-export default AddCase;
+export default AddEvidence;
