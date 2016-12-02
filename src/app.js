@@ -24,7 +24,7 @@ class App extends React.Component {
         return (
             <div className="container">
                 <h2>Please review the cases waiting to be assigned</h2>
-                <CaseTable cases={this.state.cases}/>
+                <CaseTable cases={this.state.cases} addEvidence={this.handleAddEvidence}/>
                 <AddCase addCase={this.handleAddCase}/>
             </div>
         );
@@ -46,6 +46,10 @@ class App extends React.Component {
             .catch(function(error) {
                 console.log('Error occurred: ' + error);
             });
+    }
+    
+    handleAddEvidence(evidence, caseReference) {
+        
     }
     
     handleAddCase(newCase) {
