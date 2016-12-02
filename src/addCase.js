@@ -54,6 +54,7 @@ class AddCase extends React.Component {
     }
     
     addCase() {
+        this.props.addCase({ address: this.state.address, depositAmount: this.state.depositAmount });
         this.setState({ showModal: false });
     }
     
