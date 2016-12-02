@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import { Button, Modal, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
+import { Button, Modal, FormGroup, FormControl, ControlLabel, Radio } from 'react-bootstrap';
 
 class AddCase extends React.Component {
     constructor() {
@@ -9,7 +9,7 @@ class AddCase extends React.Component {
         
         this.state = {
             showModal: false,
-            isLandlordEvidence: true,
+            evidenceOwner: "landlord",
             evidence: "",
             evidenceValidationEnabled: false
         };
@@ -24,6 +24,19 @@ class AddCase extends React.Component {
                         <Modal.Title>Add evidence</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
+                        <FormGroup>
+                            <ControlLabel>Whose evidence is it?</ControlLabel>
+                            <Radio value="landlord"
+                                   checked={this.state.evidenceOwner === 'landlord'}
+                                   onChange={this.handleEvidenceOwnerChange.bind(this)}>
+                                Landlord's
+                            </Radio>
+                            <Radio value="tenant"
+                                   checked={this.state.evidenceOwner === 'tenant'}
+                                   onChange={this.handleEvidenceOwnerChange.bind(this)}>
+                                Tenant's
+                            </Radio>
+                        </FormGroup>
                         <FormGroup validationState={this.getEvidenceValidationState()}>
                             <ControlLabel>Evidence</ControlLabel>
                             <FormControl type="textarea" 
@@ -53,11 +66,15 @@ class AddCase extends React.Component {
         this.setState({ evidence: e.target.value, evidenceValidationEnabled: true });
     }
     
+    handleEvidenceOwnerChange(e) {
+        this.setState({ evidenceOwner: e.target.value });
+    }
+    
     addEvidence() {
         // Enable all validation when submitting
         this.setState({ evidenceValidationEnabled: true }, function() {
             if(this.getEvidenceValidationState() === null) {
-                this.props.addEvidence({ evidence: this.state.evidence, isLandlordEvidence: this.state.isLandlordEvidence });
+                this.props.addEvidence({ evidence: this.state.evidence, evidenceOwner: this.state.evidenceOwner });
                 this.setState({ showModal: false });
             }
         });
@@ -70,7 +87,7 @@ class AddCase extends React.Component {
     open() {
         this.setState({ 
             showModal: true, 
-            isLandlordEvidence: true,
+            evidenceOwner: "landlord",
             evidence: "",
             evidenceValidationEnabled: false,
         });
