@@ -25,7 +25,7 @@ function CaseTableRow(props) {
             <td>{props.case.address}</td>
             <td>{props.case.depositAmount}</td>
             <td>{displayEvidence(props.case.landlordEvidence, props.case.tenantEvidence)}</td>
-            <td><AddEvidence addEvidence={props.addEvidence}/></td>
+            <td><AddEvidence addEvidence={(evidence) => props.addEvidence(evidence, props.case.caseReference)}/></td>
         </tr>
     )
 }
