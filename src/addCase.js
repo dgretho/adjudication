@@ -1,11 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import { Button } from 'react-bootstrap';
-import { Modal } from 'react-bootstrap';
-import { FormGroup } from 'react-bootstrap';
-import { FormControl } from 'react-bootstrap';
-import { ControlLabel } from 'react-bootstrap';
+import { Button, Modal, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 
 class AddCase extends React.Component {
     constructor() {
@@ -14,8 +10,10 @@ class AddCase extends React.Component {
         this.state = {
             showModal: false,
             address: "",
-            depositAmount: ""
-        }
+            addressValidationEnabled: false,
+            depositAmount: "",
+            depositAmountValidationEnabled: false
+        };
     }
     
     render() {
@@ -27,13 +25,17 @@ class AddCase extends React.Component {
                         <Modal.Title>Add a new case</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <FormGroup>
+                        <FormGroup validationState={this.getAddressValidationState()}>
                             <ControlLabel>Address</ControlLabel>
-                            <FormControl type="text" onChange={(e) => this.handleAddressChange(e)}/>
+                            <FormControl type="text" 
+                                         onChange={this.handleAddressChange.bind(this)}
+                                         onBlur={this.handleAddressChange.bind(this)}/>
                         </FormGroup>
-                        <FormGroup>
+                        <FormGroup validationState={this.getDepositAmountValidationState()}>
                             <ControlLabel>Deposit Amount</ControlLabel>
-                            <FormControl type="text" onChange={(e) => this.handleDepositAmountChange(e)}/>
+                            <FormControl type="text" 
+                                         onChange={this.handleDepositAmountChange.bind(this)}
+                                         onBlur={this.handleDepositAmountChange.bind(this)}/>
                         </FormGroup>
                     </Modal.Body>
                     <Modal.Footer>
@@ -45,17 +47,40 @@ class AddCase extends React.Component {
         );
     }
     
+    /* TODO: Make this validation generic */
+    getAddressValidationState() {
+        if(this.state.addressValidationEnabled && this.state.address.length === 0) {
+            return 'error';    
+        } else {
+            return null;
+        }
+    }
+    
+    getDepositAmountValidationState() {
+        var depositAmount = this.state.depositAmount;
+        if(this.state.depositAmountValidationEnabled && (depositAmount.length === 0 || isNaN(depositAmount))) {
+            return 'error';    
+        } else {
+            return null;
+        }
+    }
+    
     handleAddressChange(e) {
-        this.setState({ address: e.target.value });
+        this.setState({ address: e.target.value, addressValidationEnabled: true });
     }
     
     handleDepositAmountChange(e) {
-        this.setState({ depositAmount: e.target.value });
+        this.setState({ depositAmount: e.target.value, depositAmountValidationEnabled: true });
     }
     
     addCase() {
-        this.props.addCase({ address: this.state.address, depositAmount: this.state.depositAmount });
-        this.setState({ showModal: false });
+        // Enable all validation when submitting
+        this.setState({ addressValidationEnabled: true, depositAmountValidationEnabled: true }, function() {
+            if(this.getAddressValidationState() === null && this.getDepositAmountValidationState() === null) {
+                this.props.addCase({ address: this.state.address, depositAmount: this.state.depositAmount });
+                this.setState({ showModal: false });
+            }
+        });
     }
     
     close() {
@@ -63,7 +88,13 @@ class AddCase extends React.Component {
     }
     
     open() {
-        this.setState({ showModal: true });
+        this.setState({ 
+            showModal: true, 
+            address: "",
+            addressValidationEnabled: false,
+            depositAmount: "",
+            depositAmountValidationEnabled: false
+        });
     }
 }
 
