@@ -83,6 +83,23 @@ app.post('/case', function(request, response) {
   response.sendStatus(200);
 });
 
+app.post('/evidence', function(request, response) {
+  var updateCase = cases.find(function(existingCase) {
+    return existingCase.caseReference === request.body.caseReference;
+  });
+  
+  var evidenceList = null;
+  if(request.body.evidenceOwner === 'landlord') {
+    evidenceList = updateCase.landlordEvidence;
+  } else {
+    evidenceList = updateCase.tenantEvidence;
+  }
+  
+  evidenceList.push(request.body.evidence);
+  
+  response.sendStatus(200);
+});
+
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
