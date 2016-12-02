@@ -24,8 +24,8 @@ class App extends React.Component {
         return (
             <div className="container">
                 <h2>Please review the cases waiting to be assigned</h2>
-                <CaseTable cases={this.state.cases}/>
-                <AddCase addCase={this.handleAddCase}/>
+                <CaseTable cases={this.state.cases} addEvidence={this.handleAddEvidence.bind(this)}/>
+                <AddCase addCase={this.handleAddCase.bind(this)}/>
             </div>
         );
     }
@@ -48,17 +48,26 @@ class App extends React.Component {
             });
     }
     
+    handleAddEvidence(evidence, caseReference) {
+        evidence.caseReference = caseReference;
+        this.serverPost('evidence', evidence);
+    }
+    
     handleAddCase(newCase) {
+        this.serverPost('case', newCase);
+    }
+    
+    serverPost(url, jsonContent) {
         var self = this; /* TODO: There must be a better way of handling this */
         
         var headers =  {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
-        }
+        };
         
-        var content = JSON.stringify(newCase)
+        var content = JSON.stringify(jsonContent);
         
-        fetch('case', { method: 'POST', body: content, headers: headers })
+        fetch(url, { method: 'POST', body: content, headers: headers })
             .then(function(response) {
                 self.refreshCaseList();
             });
