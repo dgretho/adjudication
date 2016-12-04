@@ -19,7 +19,7 @@ class AddCase extends React.Component {
     render() {
         return (
             <div>
-                <Button bsStyle="primary" onClick={() => this.open()} className="pull-right">Add Case</Button>
+                <Button bsStyle="primary" onClick={() => this.open()}>Add Case</Button>
                 <Modal show={this.state.showModal} onHide={() => this.close()}>
                     <Modal.Header closeButton>
                         <Modal.Title>Add a new case</Modal.Title>
