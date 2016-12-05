@@ -24,7 +24,9 @@ class App extends React.Component {
         return (
             <div className="container">
                 <h2>Please review the cases waiting to be assigned</h2>
-                <CaseTable cases={this.state.casesAwaitingEvidence} addEvidence={this.handleAddEvidence.bind(this)}/>
+                <CaseTable cases={this.state.casesAwaitingEvidence} 
+                           addEvidence={this.handleAddEvidence.bind(this)}
+                           markForAdjudication={this.markForAdjudication.bind(this)}/>
                 <div className="pull-right">
                     <AddCase addCase={this.handleAddCase.bind(this)}/>
                 </div>
@@ -60,6 +62,10 @@ class App extends React.Component {
     
     handleAddCase(newCase) {
         this.serverPost('case', newCase);
+    }
+    
+    markForAdjudication(caseReference) {
+        this.serverPost(('markForAdjudication'), { caseReference : caseReference });
     }
     
     serverPost(url, jsonContent) {
