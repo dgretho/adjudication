@@ -80,6 +80,7 @@ app.post('/case', function(request, response) {
   request.body.caseReference = nextCaseReference;
   request.body.landlordEvidence = [];
   request.body.tenantEvidence = [];
+  request.body.status = 'awaiting evidence';
   
   nextCaseReference++;
   cases.push(request.body);
