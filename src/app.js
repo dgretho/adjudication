@@ -12,7 +12,7 @@ class App extends React.Component {
         super();
         
         this.state = {
-            cases: []
+            casesAwaitingEvidence: []
         }
         
         this.refreshCaseList();
@@ -24,7 +24,7 @@ class App extends React.Component {
         return (
             <div className="container">
                 <h2>Please review the cases waiting to be assigned</h2>
-                <CaseTable cases={this.state.cases} addEvidence={this.handleAddEvidence.bind(this)}/>
+                <CaseTable cases={this.state.casesAwaitingEvidence} addEvidence={this.handleAddEvidence.bind(this)}/>
                 <div className="pull-right">
                     <AddCase addCase={this.handleAddCase.bind(this)}/>
                 </div>
@@ -43,7 +43,10 @@ class App extends React.Component {
                 }
             })
             .then(function(cases) {
-                self.setState({ cases: cases });
+                var casesAwaitingEvidence = cases.filter(function(newCase){
+                    return newCase.status === 'awaiting evidence';
+                });
+                self.setState({ casesAwaitingEvidence: casesAwaitingEvidence });
             })
             .catch(function(error) {
                 console.log('Error occurred: ' + error);
