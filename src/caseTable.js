@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import { Table } from 'react-bootstrap'
 
 import AddEvidence from './addEvidence'
+import MarkForAdjudication from './markForAdjudication'
 
 function CaseTableRow(props) {
     function displayEvidence(landlordEvidence, tenantEvidence) {
@@ -26,13 +27,17 @@ function CaseTableRow(props) {
             <td>{props.case.depositAmount}</td>
             <td>{displayEvidence(props.case.landlordEvidence, props.case.tenantEvidence)}</td>
             <td className="text-center"><AddEvidence addEvidence={(evidence) => props.addEvidence(evidence, props.case.caseReference)}/></td>
+            <td className="text-center"><MarkForAdjudication markForAdjudication={() => props.markForAdjudication(props.case.caseReference)}/></td>
         </tr>
     )
 }
 
 function CaseTable(props) {
     var rows = props.cases.map(function(step) {
-        return (<CaseTableRow case={step} key={step.caseReference} addEvidence={props.addEvidence}/>);
+        return (<CaseTableRow case={step} 
+                              key={step.caseReference} 
+                              addEvidence={props.addEvidence}
+                              markForAdjudication={props.markForAdjudication}/>);
     });
     
     return (
@@ -42,6 +47,7 @@ function CaseTable(props) {
                     <th>Address</th>
                     <th>Deposit Amount</th>
                     <th>Has Evidence</th>
+                    <th></th>
                     <th></th>
                 </tr>
             </thead>

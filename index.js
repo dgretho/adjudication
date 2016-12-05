@@ -27,7 +27,8 @@ var cases = [
     landlordAmount: 700,
     caseReference: 1,
     landlordEvidence: [ "Tenant broke window" ],
-    tenantEvidence: []
+    tenantEvidence: [],
+    status: 'awaiting evidence'
   },
   { 
     address: "2 Road Name, Town, City, Post Code", 
@@ -39,7 +40,8 @@ var cases = [
     landlordAmount: 1400,
     caseReference: 2,
     landlordEvidence: [],
-    tenantEvidence: [ "I left the place as I found it" ]
+    tenantEvidence: [ "I left the place as I found it" ],
+    status: 'awaiting evidence'
   },
   { 
     address: "10 Avenue Name, Town, City, Post Code", 
@@ -51,7 +53,8 @@ var cases = [
     landlordAmount: 1500,
     caseReference: 3,
     landlordEvidence: [],
-    tenantEvidence: []
+    tenantEvidence: [],
+    status: 'awaiting evidence'
   },
   { 
     address: "5 Lane Name, Town, City, Post Code", 
@@ -63,7 +66,8 @@ var cases = [
     landlordAmount: 150,
     caseReference: 4,
     landlordEvidence: [ "Tenant didn't clean" ],
-    tenantEvidence: [ "I hired a professional cleaner" ]
+    tenantEvidence: [ "I hired a professional cleaner" ],
+    status: 'awaiting adjudication'
   }
 ];
 var nextCaseReference = 5;
@@ -76,6 +80,7 @@ app.post('/case', function(request, response) {
   request.body.caseReference = nextCaseReference;
   request.body.landlordEvidence = [];
   request.body.tenantEvidence = [];
+  request.body.status = 'awaiting evidence';
   
   nextCaseReference++;
   cases.push(request.body);
@@ -96,6 +101,16 @@ app.post('/evidence', function(request, response) {
   }
   
   evidenceList.push(request.body.evidence);
+  
+  response.sendStatus(200);
+});
+
+app.post('/markForAdjudication', function(request, response) {
+  var updateCase = cases.find(function(existingCase) {
+    return existingCase.caseReference === request.body.caseReference;
+  });
+  
+  updateCase.status = 'awaiting adjudication';
   
   response.sendStatus(200);
 });
