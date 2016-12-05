@@ -104,6 +104,16 @@ app.post('/evidence', function(request, response) {
   response.sendStatus(200);
 });
 
+app.post('/markForAdjudication', function(request, response) {
+  var updateCase = cases.find(function(existingCase) {
+    return existingCase.caseReference === request.body.caseReference;
+  });
+  
+  updateCase.status = 'awaiting adjudication';
+  
+  response.sendStatus(200);
+});
+
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
