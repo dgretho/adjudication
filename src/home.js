@@ -10,6 +10,8 @@ function Home() {
         <div className="container">
             <h2>Who are you?</h2>
             <Link to="/caseHandler">A Case Handler</Link>
+            {' or '}
+            <Link to="/adjudicator">An Adjudicator</Link>
         </div>
     );
 }

@@ -5,6 +5,7 @@ import { Router, Route, hashHistory } from 'react-router'
 
 import Home from './home';
 import CaseHandler from './caseHandler';
+import Adjudicator from './adjudicator';
 
 
 class App extends React.Component {
@@ -13,6 +14,7 @@ class App extends React.Component {
             <Router history={hashHistory}>
                 <Route path='/' component={Home} />
                 <Route path='/caseHandler' component={CaseHandler} />
+                <Route path='/adjudicator' component={Adjudicator} />
             </Router>
         );
     }
