@@ -20,6 +20,7 @@
   "scripts": {
     "heroku-postbuild": "webpack",
     "start": "node index.js",
+    "start-dev": "node index.js dev",
     "dev": "webpack -d --watch"
   },
   "repository": {

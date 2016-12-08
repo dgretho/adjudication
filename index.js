@@ -6,9 +6,14 @@ var MongoClient = require('mongodb').MongoClient
 var app = express();
 var db;
 
+var isDev = process.argv === 'dev';
+
 app.use(bodyParser.json());
 
 app.set('port', (process.env.PORT || 5000));
+app.set('connectionString', isDev ? 
+  'mongodb://dgretho:password@ds119508.mlab.com:19508/adjudicator-dev' :
+  'mongodb://dgretho:password@ds119508.mlab.com:19508/adjudicator');
 
 app.use(express.static(__dirname + '/public'));
 
