@@ -80,7 +80,7 @@ app.post('/markForAdjudication', function(request, response) {
   response.sendStatus(200);
 });
 
-MongoClient.connect('mongodb://dgretho:password@ds119508.mlab.com:19508/adjudicator-dev', (err, database) => {
+MongoClient.connect(app.get('connectionString'), (err, database) => {
   if (err) {
     return console.log(err);
   }
