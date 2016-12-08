@@ -76,6 +76,19 @@ app.get('/cases', function(request, response) {
   response.send(cases);
 });
 
+app.get('/case/:caseId', function(request, response) {
+  var caseId = parseInt(request.params.caseId);
+  var requestedCase = cases.find(function(existingCase) {
+    return existingCase.caseReference === caseId;
+  });
+  
+  if (requestedCase === undefined) {
+    requestedCase = {};
+  }
+  
+  response.send(requestedCase);
+});
+
 app.post('/case', function(request, response) {
   request.body.caseReference = nextCaseReference;
   request.body.landlordEvidence = [];

@@ -1,7 +1,6 @@
 /* global fetch */
 import React from 'react';
 import { render } from 'react-dom';
-import { PageHeader } from 'react-bootstrap';
 
 import AdjudicationTable from './adjudicationTable';
 
@@ -12,7 +11,7 @@ class Adjudicator extends React.Component {
         
         this.state = {
             casesAwaitingAdjudication: []
-        }
+        };
         
         this.refreshCaseList();
     }
@@ -21,7 +20,7 @@ class Adjudicator extends React.Component {
         return (
             <div className="container">
                 <h2>Please review the cases waiting to be adjudicated</h2>
-                <AdjudicationTable cases={this.state.casesAwaitingAdjudication} />
+                <AdjudicationTable cases={this.state.casesAwaitingAdjudication} onRowClick={this.handleRowClick.bind(this)}/>
             </div>
         );
     }
@@ -45,6 +44,10 @@ class Adjudicator extends React.Component {
             .catch(function(error) {
                 console.log('Error occurred: ' + error);
             });
+    }
+    
+    handleRowClick(caseId) {
+        this.props.router.push('/adjudicate/' + caseId);
     }
 }
 
