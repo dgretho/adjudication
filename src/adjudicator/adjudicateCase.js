@@ -1,36 +1,42 @@
 /* global fetch */
 import React from 'react';
 import { render } from 'react-dom';
-import { FormGroup, ControlLabel, FormControl } from 'react-bootstrap'
-
-import AdjudicationTable from './adjudicationTable';
-
+import { FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 
 class AdjudicateCase extends React.Component {
     constructor(props) {
         super();
         
         this.state = {
-            case: {}
+            case: {},
+            validCaseId: true
         };
         
         this.refreshCaseDetails(props.params.caseId);
     }
 
     render() {
-        return (
-            <div className="container">
-                <h2>Please review this case</h2>
-                <FormGroup>
-                    <ControlLabel>Address</ControlLabel>
-                    <FormControl.Static>{this.state.case.address}</FormControl.Static>
-                </FormGroup>
-                <FormGroup>
-                    <ControlLabel>Deposit Amount</ControlLabel>
-                    <FormControl.Static>{this.state.case.depositAmount}</FormControl.Static>
-                </FormGroup>
-            </div>
-        );
+        if(this.state.validCaseId) {
+            return (
+                <div className="container">
+                    <h2>Please review this case</h2>
+                    <FormGroup>
+                        <ControlLabel>Address</ControlLabel>
+                        <FormControl.Static>{this.state.case.address}</FormControl.Static>
+                    </FormGroup>
+                    <FormGroup>
+                        <ControlLabel>Deposit Amount</ControlLabel>
+                        <FormControl.Static>{this.state.case.depositAmount}</FormControl.Static>
+                    </FormGroup>
+                </div>
+            );
+        } else {
+            return (
+                <div className="container">
+                    <h2>This case is not valid for adjudication</h2>
+                </div>
+            );
+        }
     }
     
     refreshCaseDetails(caseId) {
@@ -44,7 +50,11 @@ class AdjudicateCase extends React.Component {
                 }
             })
             .then(function(newCase) {
-                self.setState({ case: newCase });
+                if (newCase.status === 'awaiting adjudication') {
+                    self.setState({ case: newCase });    
+                } else {
+                    self.setState({ validCaseId: false });
+                }
             })
             .catch(function(error) {
                 console.log('Error occurred: ' + error);

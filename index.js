@@ -82,6 +82,10 @@ app.get('/case/:caseId', function(request, response) {
     return existingCase.caseReference === caseId;
   });
   
+  if (requestedCase === undefined) {
+    requestedCase = {};
+  }
+  
   response.send(requestedCase);
 });
 
