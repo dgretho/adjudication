@@ -1,8 +1,10 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 
+var MongoClient = require('mongodb').MongoClient
 
 var app = express();
+var db;
 
 app.use(bodyParser.json());
 
@@ -16,118 +18,114 @@ app.get('/', function(request, response) {
   response.render('index');
 });
 
-var cases = [
-  { 
-    address: "1 Street Name, Town, City, Post Code", 
-    tenancyStartDate: new Date(2015, 1, 1),
-    tenancyEndDate: new Date(2016, 1, 1), 
-    dateAdjudicationEntered: new Date(2016, 2, 2),
-    depositAmount: 1000,
-    tenantAmount: 800,
-    landlordAmount: 700,
-    caseReference: 1,
-    landlordEvidence: [ "Tenant broke window" ],
-    tenantEvidence: [],
-    status: 'awaiting evidence'
-  },
-  { 
-    address: "2 Road Name, Town, City, Post Code", 
-    tenancyStartDate: new Date(2015, 7, 4),
-    tenancyEndDate: new Date(2016, 8, 2), 
-    dateAdjudicationEntered: new Date(2016, 9, 1),
-    depositAmount: 2000,
-    tenantAmount: 1600,
-    landlordAmount: 1400,
-    caseReference: 2,
-    landlordEvidence: [],
-    tenantEvidence: [ "I left the place as I found it" ],
-    status: 'awaiting evidence'
-  },
-  { 
-    address: "10 Avenue Name, Town, City, Post Code", 
-    tenancyStartDate: new Date(2015, 3, 15),
-    tenancyEndDate: new Date(2016, 4, 2), 
-    dateAdjudicationEntered: new Date(2016, 7, 20),
-    depositAmount: 5000,
-    tenantAmount: 4000,
-    landlordAmount: 1500,
-    caseReference: 3,
-    landlordEvidence: [],
-    tenantEvidence: [],
-    status: 'awaiting evidence'
-  },
-  { 
-    address: "5 Lane Name, Town, City, Post Code", 
-    tenancyStartDate: new Date(2015, 3, 19),
-    tenancyEndDate: new Date(2016, 4, 5), 
-    dateAdjudicationEntered: new Date(2016, 7, 25),
-    depositAmount: 200,
-    tenantAmount: 100,
-    landlordAmount: 150,
-    caseReference: 4,
-    landlordEvidence: [ "Tenant didn't clean" ],
-    tenantEvidence: [ "I hired a professional cleaner" ],
-    status: 'awaiting adjudication'
-  }
-];
-var nextCaseReference = 5;
-
 app.get('/cases', function(request, response) {
-  response.send(cases);
+  getCases((cases) => {
+    response.send(cases);
+  });
 });
 
 app.get('/case/:caseId', function(request, response) {
-  var caseId = parseInt(request.params.caseId);
-  var requestedCase = cases.find(function(existingCase) {
-    return existingCase.caseReference === caseId;
+  getCases((cases) => {
+    var caseId = parseInt(request.params.caseId);
+    var requestedCase = cases.find(function(existingCase) {
+      return existingCase.caseReference === caseId;
+    });
+    
+    if (requestedCase === undefined) {
+      requestedCase = {};
+    }
+    
+    response.send(requestedCase);
   });
-  
-  if (requestedCase === undefined) {
-    requestedCase = {};
-  }
-  
-  response.send(requestedCase);
 });
 
 app.post('/case', function(request, response) {
-  request.body.caseReference = nextCaseReference;
-  request.body.landlordEvidence = [];
-  request.body.tenantEvidence = [];
-  request.body.status = 'awaiting evidence';
-  
-  nextCaseReference++;
-  cases.push(request.body);
+  getCases((cases) => {
+    request.body.caseReference = getCaseReference(cases);
+    request.body.landlordEvidence = [];
+    request.body.tenantEvidence = [];
+    request.body.status = 'awaiting evidence';
+    
+    createCase(request.body);
+  });
   
   response.sendStatus(200);
 });
 
 app.post('/evidence', function(request, response) {
-  var updateCase = cases.find(function(existingCase) {
-    return existingCase.caseReference === request.body.caseReference;
+  getCases((cases) => {
+    var caseToUpdate = cases.find(function(existingCase) {
+      return existingCase.caseReference === request.body.caseReference;
+    });
+    
+    var evidenceProperty = request.body.evidenceOwner + 'Evidence';
+    var evidenceList = caseToUpdate[evidenceProperty];
+    evidenceList.push(request.body.evidence);
+    var evidenceUpdate = { $set: {} };
+    evidenceUpdate.$set[evidenceProperty] = evidenceList;
+    updateCase(request.body.caseReference, evidenceUpdate);
   });
-  
-  var evidenceList = null;
-  if(request.body.evidenceOwner === 'landlord') {
-    evidenceList = updateCase.landlordEvidence;
-  } else {
-    evidenceList = updateCase.tenantEvidence;
-  }
-  
-  evidenceList.push(request.body.evidence);
   
   response.sendStatus(200);
 });
 
 app.post('/markForAdjudication', function(request, response) {
-  var updateCase = cases.find(function(existingCase) {
-    return existingCase.caseReference === request.body.caseReference;
-  });
-  
-  updateCase.status = 'awaiting adjudication';
+  updateCase(request.body.caseReference, { $set: { status: 'awaiting adjudication' }});
   
   response.sendStatus(200);
 });
 
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
+MongoClient.connect('mongodb://dgretho:password@ds119508.mlab.com:19508/adjudicator-dev', (err, database) => {
+  if (err) {
+    return console.log(err);
+  }
+  db = database;
+  app.listen(app.get('port'), function() {
+    console.log('Node app is running on port', app.get('port'));
+  });
 });
+
+function getCases(callback) {
+  db.collection('cases').find().toArray((err, cases) => {
+    if (err) {
+      return console.log(err);
+    }
+    
+    callback(cases !== null ? cases : []);
+  });
+}
+
+function createCase(newCase) {
+  db.collection('cases').save(newCase, (error) => {
+    if (error) {
+      return console.log(error);
+    }
+
+    console.log('created case ' + newCase.caseReference);
+  });
+}
+
+function updateCase(caseReference, update) {
+  db.collection('cases').findOneAndUpdate(
+    { caseReference: caseReference },
+    update,
+    {},
+    (error) => {
+      if (error) {
+        return console.log(error);
+      }
+  
+      console.log('updated case ' + caseReference);
+    });
+}
+
+function getCaseReference(cases) {
+  if (cases.length === 0) {
+    return 1;
+  }
+  
+  var caseReferences = cases.map((aCase) => {
+    return aCase.caseReference;
+  });
+  return Math.max.apply(Math, caseReferences) + 1;
+}
