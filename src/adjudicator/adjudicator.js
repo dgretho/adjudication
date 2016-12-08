@@ -1,7 +1,6 @@
 /* global fetch */
 import React from 'react';
 import { render } from 'react-dom';
-import { PageHeader } from 'react-bootstrap';
 
 import AdjudicationTable from './adjudicationTable';
 
@@ -12,7 +11,7 @@ class Adjudicator extends React.Component {
         
         this.state = {
             casesAwaitingAdjudication: []
-        }
+        };
         
         this.refreshCaseList();
     }
