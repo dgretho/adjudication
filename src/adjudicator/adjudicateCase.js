@@ -1,30 +1,31 @@
 /* global fetch */
 import React from 'react';
 import { render } from 'react-dom';
+import { FormGroup, ControlLabel, FormControl } from 'react-bootstrap'
 
 import AdjudicationTable from './adjudicationTable';
 
 
 class AdjudicateCase extends React.Component {
-    constructor() {
+    constructor(props) {
         super();
         
         this.state = {
             case: {}
         };
         
-        this.refreshCaseDetails(this.props.caseId);
+        this.refreshCaseDetails(props.params.caseId);
     }
 
     render() {
         return (
             <div className="container">
                 <h2>Please review this case</h2>
-                <FormGroup validationState={this.getAddressValidationState()}>
+                <FormGroup>
                     <ControlLabel>Address</ControlLabel>
                     <FormControl.Static>{this.state.case.address}</FormControl.Static>
                 </FormGroup>
-                <FormGroup validationState={this.getDepositAmountValidationState()}>
+                <FormGroup>
                     <ControlLabel>Deposit Amount</ControlLabel>
                     <FormControl.Static>{this.state.case.depositAmount}</FormControl.Static>
                 </FormGroup>
