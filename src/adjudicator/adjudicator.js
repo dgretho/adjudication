@@ -6,7 +6,7 @@ import AdjudicationTable from './adjudicationTable';
 
 
 class Adjudicator extends React.Component {
-    constructor(props) {
+    constructor() {
         super();
         
         this.state = {

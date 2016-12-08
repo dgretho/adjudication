@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { Table } from 'react-bootstrap'
+import { Table } from 'react-bootstrap';
 
 function AdjudicationTableRow(props) {
     return (
@@ -9,7 +9,7 @@ function AdjudicationTableRow(props) {
             <td>{props.case.address}</td>
             <td>{props.case.depositAmount}</td>
         </tr>
-    )
+    );
 }
 
 function AdjudicationTable(props) {
