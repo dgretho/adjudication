@@ -51,9 +51,9 @@ app.post('/case', function(request, response) {
     request.body.tenantEvidence = [];
     request.body.status = 'awaiting evidence';
     
-    createCase(request.body);
-  
-    response.sendStatus(200);
+    createCase(request.body, () => {
+      response.sendStatus(200);      
+    });
   });
 });
 
@@ -100,8 +100,12 @@ function getCases(callback) {
   });
 }
 
-function createCase(newCase) {
+function createCase(newCase, callback) {
   db.collection('cases').save(newCase, (error) => {
+    if (callback) {
+      callback(error); 
+    }
+      
     if (error) {
       return console.log(error);
     }
