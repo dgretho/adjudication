@@ -116,15 +116,15 @@ function updateCase(caseReference, update, callback) {
     update,
     {},
     (error) => {
+      if (callback) {
+        callback(error); 
+      }
+      
       if (error) {
         return console.log(error);
       }
   
       console.log('updated case ' + caseReference);
-      
-      if (callback) {
-        callback(); 
-      }
     });
 }
 
