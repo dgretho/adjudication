@@ -52,9 +52,9 @@ app.post('/case', function(request, response) {
     request.body.status = 'awaiting evidence';
     
     createCase(request.body);
-  });
   
-  response.sendStatus(200);
+    response.sendStatus(200);
+  });
 });
 
 app.post('/evidence', function(request, response) {
@@ -68,16 +68,16 @@ app.post('/evidence', function(request, response) {
     evidenceList.push(request.body.evidence);
     var evidenceUpdate = { $set: {} };
     evidenceUpdate.$set[evidenceProperty] = evidenceList;
-    updateCase(request.body.caseReference, evidenceUpdate);
+    updateCase(request.body.caseReference, evidenceUpdate, () => {
+      response.sendStatus(200);      
+    });
   });
-  
-  response.sendStatus(200);
 });
 
 app.post('/markForAdjudication', function(request, response) {
-  updateCase(request.body.caseReference, { $set: { status: 'awaiting adjudication' }});
-  
-  response.sendStatus(200);
+  updateCase(request.body.caseReference, { $set: { status: 'awaiting adjudication' }}, () => {
+    response.sendStatus(200);    
+  });
 });
 
 MongoClient.connect(app.get('connectionString'), (err, database) => {
@@ -110,7 +110,7 @@ function createCase(newCase) {
   });
 }
 
-function updateCase(caseReference, update) {
+function updateCase(caseReference, update, callback) {
   db.collection('cases').findOneAndUpdate(
     { caseReference: caseReference },
     update,
@@ -121,6 +121,10 @@ function updateCase(caseReference, update) {
       }
   
       console.log('updated case ' + caseReference);
+      
+      if (callback) {
+        callback(); 
+      }
     });
 }
 
