@@ -51,10 +51,10 @@ app.post('/case', function(request, response) {
     request.body.tenantEvidence = [];
     request.body.status = 'awaiting evidence';
     
-    createCase(request.body);
+    createCase(request.body, () => {
+      response.sendStatus(200);      
+    });
   });
-  
-  response.sendStatus(200);
 });
 
 app.post('/evidence', function(request, response) {
@@ -68,16 +68,16 @@ app.post('/evidence', function(request, response) {
     evidenceList.push(request.body.evidence);
     var evidenceUpdate = { $set: {} };
     evidenceUpdate.$set[evidenceProperty] = evidenceList;
-    updateCase(request.body.caseReference, evidenceUpdate);
+    updateCase(request.body.caseReference, evidenceUpdate, () => {
+      response.sendStatus(200);      
+    });
   });
-  
-  response.sendStatus(200);
 });
 
 app.post('/markForAdjudication', function(request, response) {
-  updateCase(request.body.caseReference, { $set: { status: 'awaiting adjudication' }});
-  
-  response.sendStatus(200);
+  updateCase(request.body.caseReference, { $set: { status: 'awaiting adjudication' }}, () => {
+    response.sendStatus(200);    
+  });
 });
 
 MongoClient.connect(app.get('connectionString'), (err, database) => {
@@ -100,8 +100,12 @@ function getCases(callback) {
   });
 }
 
-function createCase(newCase) {
+function createCase(newCase, callback) {
   db.collection('cases').save(newCase, (error) => {
+    if (callback) {
+      callback(error); 
+    }
+      
     if (error) {
       return console.log(error);
     }
@@ -110,12 +114,16 @@ function createCase(newCase) {
   });
 }
 
-function updateCase(caseReference, update) {
+function updateCase(caseReference, update, callback) {
   db.collection('cases').findOneAndUpdate(
     { caseReference: caseReference },
     update,
     {},
     (error) => {
+      if (callback) {
+        callback(error); 
+      }
+      
       if (error) {
         return console.log(error);
       }
