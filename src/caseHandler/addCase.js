@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import { Button, Modal, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 
-import InputField from './inputField'
+import InputField from '../common/inputField';
 
 class AddCase extends React.Component {
     constructor() {
@@ -98,7 +98,7 @@ class AddCase extends React.Component {
             field.value = e.target.value;
             field.validate();
             this.setState({ fields: this.state.fields.slice() });
-        }
+        };
         
         field.validate = function() {
             if(   field.value.length === 0
@@ -107,7 +107,7 @@ class AddCase extends React.Component {
             } else {
                 field.isValid = true;
             }
-        }
+        };
         
         return field;
     }
