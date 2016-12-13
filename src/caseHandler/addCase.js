@@ -12,7 +12,11 @@ class AddCase extends React.Component {
             address: "",
             addressValidationEnabled: false,
             depositAmount: "",
-            depositAmountValidationEnabled: false
+            depositAmountValidationEnabled: false,
+            amountTenantRequests: "",
+            amountTenantRequestsValidationEnabled: false,
+            amountLandlordRequests: "",
+            amountLandlordRequestsValidationEnabled: false
         };
     }
     
@@ -36,6 +40,18 @@ class AddCase extends React.Component {
                             <FormControl type="text" 
                                          onChange={this.handleDepositAmountChange.bind(this)}
                                          onBlur={this.handleDepositAmountChange.bind(this)}/>
+                        </FormGroup>
+                        <FormGroup validationState={this.getAmountTenantRequestsValidationState()}>
+                            <ControlLabel>Amount Tenant Requests</ControlLabel>
+                            <FormControl type="text" 
+                                         onChange={this.handleAmountTenantRequestsChange.bind(this)}
+                                         onBlur={this.handleAmountTenantRequestsChange.bind(this)}/>
+                        </FormGroup>
+                        <FormGroup validationState={this.getAmountLandlordRequestsValidationState()}>
+                            <ControlLabel>Amount Landlord Requests</ControlLabel>
+                            <FormControl type="text" 
+                                         onChange={this.handleAmountLandlordRequestsChange.bind(this)}
+                                         onBlur={this.handleAmountLandlordRequestsChange.bind(this)}/>
                         </FormGroup>
                     </Modal.Body>
                     <Modal.Footer>
@@ -65,6 +81,24 @@ class AddCase extends React.Component {
         }
     }
     
+    getAmountTenantRequestsValidationState() {
+        var amountTenantRequests = this.state.amountTenantRequests;
+        if(this.state.amountTenantRequestsValidationEnabled && (amountTenantRequests.length === 0 || isNaN(amountTenantRequests))) {
+            return 'error';    
+        } else {
+            return null;
+        }
+    }
+    
+    getAmountLandlordRequestsValidationState() {
+        var amountLandlordRequests = this.state.amountLandlordRequests;
+        if(this.state.amountLandlordRequestsValidationEnabled && (amountLandlordRequests.length === 0 || isNaN(amountLandlordRequests))) {
+            return 'error';    
+        } else {
+            return null;
+        }
+    }
+    
     handleAddressChange(e) {
         this.setState({ address: e.target.value, addressValidationEnabled: true });
     }
@@ -73,11 +107,19 @@ class AddCase extends React.Component {
         this.setState({ depositAmount: e.target.value, depositAmountValidationEnabled: true });
     }
     
+    handleAmountTenantRequestsChange(e) {
+        this.setState({ amountTenantRequests: e.target.value, amountTenantRequestsValidationEnabled: true });
+    }
+    
+    handleAmountLandlordRequestsChange(e) {
+        this.setState({ amountLandlordRequests: e.target.value, amountLandlordRequestsValidationEnabled: true });
+    }
+    
     addCase() {
         // Enable all validation when submitting
-        this.setState({ addressValidationEnabled: true, depositAmountValidationEnabled: true }, function() {
-            if(this.getAddressValidationState() === null && this.getDepositAmountValidationState() === null) {
-                this.props.addCase({ address: this.state.address, depositAmount: this.state.depositAmount });
+        this.setState({ addressValidationEnabled: true, depositAmountValidationEnabled: true, amountTenantRequestsValidationEnabled: true, amountLandlordRequestsValidationEnabled: true }, function() {
+            if(this.getAddressValidationState() === null && this.getDepositAmountValidationState() === null && this.getAmountTenantRequestsValidationState() === null && this.getAmountLandlordRequestsValidationState() === null) {
+                this.props.addCase({ address: this.state.address, depositAmount: this.state.depositAmount, amountTenantRequests: this.state.amountTenantRequests, amountLandlordRequests: this.state.amountLandlordRequests });
                 this.setState({ showModal: false });
             }
         });
@@ -93,7 +135,11 @@ class AddCase extends React.Component {
             address: "",
             addressValidationEnabled: false,
             depositAmount: "",
-            depositAmountValidationEnabled: false
+            depositAmountValidationEnabled: false,
+            amountTenantRequests: "",
+            amountTenantRequestsValidationEnabled: false,
+            amountLandlordRequests: "",
+            amountLandlordRequestsValidationEnabled: false
         });
     }
 }
