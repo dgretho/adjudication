@@ -3,24 +3,33 @@ import { render } from 'react-dom';
 
 import { Button, Modal, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 
+import InputField from './inputField'
+
 class AddCase extends React.Component {
     constructor() {
         super();
         
         this.state = {
             showModal: false,
-            address: "",
-            addressValidationEnabled: false,
-            depositAmount: "",
-            depositAmountValidationEnabled: false,
-            amountTenantRequests: "",
-            amountTenantRequestsValidationEnabled: false,
-            amountLandlordRequests: "",
-            amountLandlordRequestsValidationEnabled: false
+            fields: [
+                this.createField("Address", "text"),
+                this.createField("Deposit Amount", "number"),
+                this.createField("Amount Tenant Requests", "number"),
+                this.createField("Amount Landlord Requests", "number")
+            ]
         };
     }
     
     render() {
+        var fields = this.state.fields.map((field) => {
+            return (
+                <InputField label={ field.label } 
+                            validationState={ field.getValidationState }
+                            onChange={ field.handleChange.bind(this) }
+                            key={ field.label } />
+            );
+        });
+        
         return (
             <div>
                 <Button bsStyle="primary" onClick={() => this.open()}>Add Case</Button>
@@ -29,30 +38,7 @@ class AddCase extends React.Component {
                         <Modal.Title>Add a new case</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <FormGroup validationState={this.getAddressValidationState()}>
-                            <ControlLabel>Address</ControlLabel>
-                            <FormControl type="text" 
-                                         onChange={this.handleAddressChange.bind(this)}
-                                         onBlur={this.handleAddressChange.bind(this)}/>
-                        </FormGroup>
-                        <FormGroup validationState={this.getDepositAmountValidationState()}>
-                            <ControlLabel>Deposit Amount</ControlLabel>
-                            <FormControl type="text" 
-                                         onChange={this.handleDepositAmountChange.bind(this)}
-                                         onBlur={this.handleDepositAmountChange.bind(this)}/>
-                        </FormGroup>
-                        <FormGroup validationState={this.getAmountTenantRequestsValidationState()}>
-                            <ControlLabel>Amount Tenant Requests</ControlLabel>
-                            <FormControl type="text" 
-                                         onChange={this.handleAmountTenantRequestsChange.bind(this)}
-                                         onBlur={this.handleAmountTenantRequestsChange.bind(this)}/>
-                        </FormGroup>
-                        <FormGroup validationState={this.getAmountLandlordRequestsValidationState()}>
-                            <ControlLabel>Amount Landlord Requests</ControlLabel>
-                            <FormControl type="text" 
-                                         onChange={this.handleAmountLandlordRequestsChange.bind(this)}
-                                         onBlur={this.handleAmountLandlordRequestsChange.bind(this)}/>
-                        </FormGroup>
+                        { fields }
                     </Modal.Body>
                     <Modal.Footer>
                         <Button bsStyle="success" onClick={() => this.addCase()}>Add Case</Button>
@@ -63,63 +49,21 @@ class AddCase extends React.Component {
         );
     }
     
-    /* TODO: Make this validation generic */
-    getAddressValidationState() {
-        if(this.state.addressValidationEnabled && this.state.address.length === 0) {
-            return 'error';    
-        } else {
-            return null;
-        }
-    }
-    
-    getDepositAmountValidationState() {
-        var depositAmount = this.state.depositAmount;
-        if(this.state.depositAmountValidationEnabled && (depositAmount.length === 0 || isNaN(depositAmount))) {
-            return 'error';    
-        } else {
-            return null;
-        }
-    }
-    
-    getAmountTenantRequestsValidationState() {
-        var amountTenantRequests = this.state.amountTenantRequests;
-        if(this.state.amountTenantRequestsValidationEnabled && (amountTenantRequests.length === 0 || isNaN(amountTenantRequests))) {
-            return 'error';    
-        } else {
-            return null;
-        }
-    }
-    
-    getAmountLandlordRequestsValidationState() {
-        var amountLandlordRequests = this.state.amountLandlordRequests;
-        if(this.state.amountLandlordRequestsValidationEnabled && (amountLandlordRequests.length === 0 || isNaN(amountLandlordRequests))) {
-            return 'error';    
-        } else {
-            return null;
-        }
-    }
-    
-    handleAddressChange(e) {
-        this.setState({ address: e.target.value, addressValidationEnabled: true });
-    }
-    
-    handleDepositAmountChange(e) {
-        this.setState({ depositAmount: e.target.value, depositAmountValidationEnabled: true });
-    }
-    
-    handleAmountTenantRequestsChange(e) {
-        this.setState({ amountTenantRequests: e.target.value, amountTenantRequestsValidationEnabled: true });
-    }
-    
-    handleAmountLandlordRequestsChange(e) {
-        this.setState({ amountLandlordRequests: e.target.value, amountLandlordRequestsValidationEnabled: true });
-    }
-    
     addCase() {
-        // Enable all validation when submitting
-        this.setState({ addressValidationEnabled: true, depositAmountValidationEnabled: true, amountTenantRequestsValidationEnabled: true, amountLandlordRequestsValidationEnabled: true }, function() {
-            if(this.getAddressValidationState() === null && this.getDepositAmountValidationState() === null && this.getAmountTenantRequestsValidationState() === null && this.getAmountLandlordRequestsValidationState() === null) {
-                this.props.addCase({ address: this.state.address, depositAmount: this.state.depositAmount, amountTenantRequests: this.state.amountTenantRequests, amountLandlordRequests: this.state.amountLandlordRequests });
+        // Validate all fields when submitting
+        var fields = this.state.fields.slice();
+        fields.forEach((field) => {
+            field.validate();
+        });
+        this.setState({ fields: fields }, function() {
+            var formValid = !this.state.fields.some((field) => { return field.isValid === false; });
+            if(formValid) {
+                this.props.addCase({ 
+                    address: this.state.fields[0].value, 
+                    depositAmount: this.state.fields[1].value, 
+                    amountTenantRequests: this.state.fields[2].value, 
+                    amountLandlordRequests: this.state.fields[3].value
+                });
                 this.setState({ showModal: false });
             }
         });
@@ -130,17 +74,42 @@ class AddCase extends React.Component {
     }
     
     open() {
-        this.setState({ 
-            showModal: true, 
-            address: "",
-            addressValidationEnabled: false,
-            depositAmount: "",
-            depositAmountValidationEnabled: false,
-            amountTenantRequests: "",
-            amountTenantRequestsValidationEnabled: false,
-            amountLandlordRequests: "",
-            amountLandlordRequestsValidationEnabled: false
+        var fields = this.state.fields.slice();
+        fields.forEach((field) => {
+            field.isValid = true;
+            field.value = "";
         });
+        this.setState({ fields: fields, showModal: true });
+    }
+    
+    createField(label, type) {
+        var field = {
+            label: label,
+            type: type,
+            isValid: true,
+            value: ""
+        };
+        
+        field.getValidationState = function() {
+            return field.isValid ? null : 'error';
+        };
+        
+        field.handleChange = function(e) {
+            field.value = e.target.value;
+            field.validate();
+            this.setState({ fields: this.state.fields.slice() });
+        }
+        
+        field.validate = function() {
+            if(   field.value.length === 0
+               || (field.type === "number" && isNaN(field.value))) {
+                field.isValid = false;
+            } else {
+                field.isValid = true;
+            }
+        }
+        
+        return field;
     }
 }
 
