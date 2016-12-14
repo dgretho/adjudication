@@ -20,7 +20,8 @@ class Adjudicator extends React.Component {
         return (
             <div className="container">
                 <h2>Please review the cases waiting to be adjudicated</h2>
-                <AdjudicationTable cases={this.state.casesAwaitingAdjudication} onRowClick={this.handleRowClick.bind(this)}/>
+                <AdjudicationTable cases={ this.state.casesAwaitingAdjudication } 
+                                   onRowClick={ this.handleRowClick.bind(this) } />
             </div>
         );
     }

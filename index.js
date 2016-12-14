@@ -80,6 +80,16 @@ app.post('/markForAdjudication', function(request, response) {
   });
 });
 
+app.post('/adjudicate', function(request, response) {
+  var updateCaseValue = { 
+    status: 'adjudication complete', 
+    amountToReturnToLandlord: request.body.amountToReturnToLandlord 
+  };
+  updateCase(request.body.caseReference, { $set: updateCaseValue }, () => {
+    response.sendStatus(200);    
+  });
+});
+
 MongoClient.connect(app.get('connectionString'), (err, database) => {
   if (err) {
     return console.log(err);
