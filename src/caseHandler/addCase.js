@@ -14,8 +14,8 @@ class AddCase extends React.Component {
             fields: [
                 this.createField("Address", "text"),
                 this.createField("Deposit Amount", "number"),
-                this.createField("Amount Tenant Requests", "number"),
-                this.createField("Amount Landlord Requests", "number")
+                this.createField("Amount Tenant Requests", "tenant requested"),
+                this.createField("Amount Landlord Requests", "landlord requested")
             ]
         };
     }
@@ -77,6 +77,7 @@ class AddCase extends React.Component {
         var fields = this.state.fields.slice();
         fields.forEach((field) => {
             field.isValid = true;
+            field.validationEnabled = false;
             field.value = "";
         });
         this.setState({ fields: fields, showModal: true });
@@ -87,6 +88,7 @@ class AddCase extends React.Component {
             label: label,
             type: type,
             isValid: true,
+            validationEnabled: false,
             value: ""
         };
         
@@ -101,13 +103,51 @@ class AddCase extends React.Component {
         };
         
         field.validate = function() {
-            if(   field.value.length === 0
-               || (field.type === "number" && isNaN(field.value))) {
+            field.validationEnabled = true;
+            if(field.value.length === 0) {
+                field.isValid = false;
+            } else if (field.type === "number" && isNaN(field.value)) {
+                field.isValid = false;
+            } else if (field.type === "tenant requested" && field.amountTenantRequestedInvalid()) {
+                field.isValid = false;
+            } else if (field.type === "landlord requested" && field.amountLandlordRequestedInvalid()) {
                 field.isValid = false;
             } else {
                 field.isValid = true;
             }
         };
+        
+        var addCaseModel = this;
+        field.amountTenantRequestedInvalid = function() {
+            var depositAmount = parseInt(addCaseModel.state.fields[1].value);
+            var amountTenantRequests = parseInt(addCaseModel.state.fields[2].value);
+            
+            // The tenant has to request some but can't request more than all the money
+            return isNaN(depositAmount)
+                || amountTenantRequests <= 0
+                || amountTenantRequests > depositAmount
+                || field.amountLandlordRequestedInvalid();
+        }
+        
+        field.amountLandlordRequestedInvalid = function() {
+            var amountLandlordRequests = parseInt(addCaseModel.state.fields[2].value);
+            
+            // The landlord can request more than the total deposit amount
+            return amountLandlordRequests <= 0 || field.noDispute();
+        }
+        
+        field.noDispute = function() {
+            var depositAmountField = addCaseModel.state.fields[1];
+            var amountTenantRequestsField = addCaseModel.state.fields[2];
+            var amountLandlordRequestsField = addCaseModel.state.fields[3];
+            var depositAmount = parseInt(depositAmountField.value);
+            var amountTenantRequests = parseInt(amountTenantRequestsField.value);
+            var amountLandlordRequests = parseInt(amountLandlordRequestsField.value);
+            
+            // If all three fields have been entered but there is no actual dispute
+            return depositAmountField.validationEnabled && amountTenantRequestsField.validationEnabled && amountLandlordRequestsField.validationEnabled
+                && (amountTenantRequests + amountLandlordRequests <= depositAmount);
+        }
         
         return field;
     }
